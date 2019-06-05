@@ -1,80 +1,73 @@
 <template>
-  <section class="container">
-    <div class="input">
-      <q-input
-        ref="input"
-        autofocus
-        v-model="task"
-        label="type you task here!"
-        @keyup.enter="saveTask()"
-      />
-    </div>
-    <div class="list">
-      <ul>
-        <li v-for="(task, index) in tasks" :key="index">
-          <q-checkbox v-model="task.done" />
-          <span @click="setFocus(index)">{{ task.title }}</span>
-        </li>
-      </ul>
-    </div>
-  </section>
-</template>
+  <q-page class="container">
+    <q-list>
+      <div v-for="(task, index) in tasks" :key="index">
+        <q-slide-item right-color="red" @left="opt => moveDone(opt, index)" @right="opt => moveTrash(opt, index)">
+          <template v-slot:left>
+            <q-icon name="done" />
+          </template>
+          <template v-slot:right>
+            <q-icon name="delete" />
+          </template>
+          <q-item>
+            <q-item-section>
+              <q-item-label>{{ task.title }}</q-item-label>
+              <q-item-label caption lines="2">{{ task.description }}</q-item-label>
+            </q-item-section>
 
-<script>
-export default {
-  name: 'Task',
-  data () {
-    return {
-      tasks: [],
-      task: '',
-      taskID: null,
-      edit: false,
-      done: false
-    }
-  },
-  methods: {
-    saveTask () {
-      if (this.task === '') {
-        return
-      }
-      let done = false
-      if (this.taskID) {
-        done = this.tasks[this.taskID].done
-        this.tasks[this.taskID].title = this.task
-        this.taskID = null
-      } else {
-        const value = { title: this.task, done }
-        this.tasks.push(value)
-      }
-      this.$q.localStorage.set('tasks', this.tasks)
-      this.task = ''
-    },
-    loadTasks () {
-      if (!this.$q.localStorage.getItem('tasks')) {
-        return
-      }
-      this.tasks = this.$q.localStorage.getItem('tasks')
-    },
-    setFocus (index) {
-      this.taskID = index
-      this.task = this.tasks[index].title
-      this.$refs.input.focus()
-    },
-    checkClicked () {
-      console.log('kkkkkkkk')
-    }
-  },
-  created () {
-    this.loadTasks()
-  },
-  watch: {
-    done: () => {
-      console.log('aa')
-      this.$q.localStorage.set('tasks', this.tasks)
-    }
-  }
-}
-</script>
+            <q-item-section side top>
+              <q-item-label caption>{{ task.date }}</q-item-label>
+            </q-item-section>
+          </q-item>
+        </q-slide-item>
+        <q-separator spaced inset />
+      </div>
+    </q-list>
+
+    <q-dialog v-model="dialogTask" persistent>
+      <q-card style="min-width: 320px">
+        <q-card-section>
+          <div class="text-h6">{{ headerDialog }}</div>
+        </q-card-section>
+
+        <q-card-section class="q-gutter-lg">
+          <q-input
+            filled
+            ref="input"
+            autofocus
+            v-model="task.title"
+            label="type here!"
+            @keyup.enter="saveTask()"
+          />
+
+          <q-input
+            filled
+            v-model="task.description"
+            label="description"
+          />
+
+          <q-input filled v-model="task.date" label="date of your task">
+            <template v-slot:append>
+              <q-icon name="event" class="cursor-pointer">
+                <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
+                  <q-date v-model="task.date" @input="() => $refs.qDateProxy.hide()" mask="DD/MM/YYYY"/>
+                </q-popup-proxy>
+              </q-icon>
+            </template>
+          </q-input>
+        </q-card-section>
+
+        <q-card-actions align="right" class="text-primary">
+          <q-btn flat label="Cancel" @click="onCloseDialog" v-close-popup />
+          <q-btn flat label="Commit" @click="saveTask" v-close-popup />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+  <q-page-sticky position="bottom-right" :offset="[18, 18]">
+    <q-btn fab icon="add" color="primary" @click="dialogTask = true"/>
+  </q-page-sticky>
+  </q-page>
+</template>
 
 <style>
   .container {
@@ -84,3 +77,75 @@ export default {
     list-style: none
   }
 </style>
+
+<script>
+export default {
+  name: 'Task',
+  data () {
+    return {
+      tasks: [],
+      task: {
+        title: '',
+        description: '',
+        date: ''
+      },
+      taskID: null,
+      edit: false,
+      done: false,
+      dialogTask: false,
+      headerDialog: 'Create your task'
+    }
+  },
+  methods: {
+    saveTask () {
+      if (this.task.title === '') {
+        return
+      }
+      if (this.taskID) {
+        this.tasks[this.taskID] = this.task
+        this.taskID = null
+      } else {
+        this.tasks.push(JSON.parse(JSON.stringify(this.task)))
+      }
+      // this.dialogTask = false
+      this.$q.localStorage.set('tasks', this.tasks)
+      this.headerDialog = 'Create your task'
+      this.task = {}
+    },
+    moveTrash ({ reset }, index) {
+      this.tasks.splice(index, 1)
+      this.$q.notify('Task removed')
+      this.finalize(reset)
+    },
+    moveDone ({ reset }, index) {
+      this.$q.notify('Index: ' + index)
+      this.finalize(reset)
+    },
+    finalize (reset) {
+      this.timer = setTimeout(() => {
+        reset()
+      }, 1000)
+    },
+    loadTasks () {
+      if (!this.$q.localStorage.getItem('tasks')) {
+        return
+      }
+      this.tasks = this.$q.localStorage.getItem('tasks')
+    },
+    editTask (index) {
+      this.dialogTask = true
+      this.headerDialog = 'Edit your task'
+      this.taskID = index
+      this.task = this.$q.localStorage.getItem('tasks')[index]
+    },
+    onCloseDialog () {
+      this.task = {}
+      this.taskID = null
+      this.headerDialog = 'Create your task'
+    }
+  },
+  created () {
+    this.loadTasks()
+  }
+}
+</script>

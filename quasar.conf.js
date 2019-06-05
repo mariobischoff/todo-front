@@ -28,9 +28,11 @@ module.exports = function (ctx) {
       components: [
         'QLayout',
         'QHeader',
+        'QFooter',
         'QDrawer',
         'QPageContainer',
         'QPage',
+        'QPageSticky',
         'QToolbar',
         'QToolbarTitle',
         'QBtn',
@@ -39,14 +41,26 @@ module.exports = function (ctx) {
         'QItem',
         'QItemSection',
         'QItemLabel',
+        'QSeparator',
+        'QSlideItem',
         'QInput',
         'QCheckbox',
         'QIcon',
-        'QAvatar'
+        'QAvatar',
+        'QFab',
+        'QFabAction',
+        'QDialog',
+        'QCard',
+        'QCardActions',
+        'QCardSection',
+        'QDate',
+        'QPopupProxy'
       ],
 
       directives: [
-        'Ripple'
+        'Ripple',
+        'ClosePopup',
+        'TouchSwipe'
       ],
 
       // Quasar plugins

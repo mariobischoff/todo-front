@@ -13,7 +13,7 @@
         </q-btn>
 
         <q-toolbar-title>
-          Todo <q-icon name="done" color="green" style="font-size: 30px"/>
+          Todo
         </q-toolbar-title>
       </q-toolbar>
     </q-header>
@@ -23,15 +23,15 @@
       bordered
       content-class="bg-grey-2"
     >
-    <class class="header">
+    <div class="header">
       <q-avatar size="80px">
         <img src="https://forum.edencraft.com.br/download/file.php?avatar=6926_1514724632.jpg" />
       </q-avatar>
       <h1>Mario</h1>
       <p>mariobischoff@gmail.com</p>
-    </class>
+    </div>
       <q-list>
-        <q-item clickable to="/">
+        <q-item clickable to="/" exact>
           <q-item-section avatar>
             <q-icon name="list" />
           </q-item-section>
@@ -39,7 +39,7 @@
             <q-item-label>Tasks</q-item-label>
           </q-item-section>
         </q-item>
-        <q-item clickable to="/checked">
+        <q-item clickable to="/checked" exact>
           <q-item-section avatar>
             <q-icon name="done" />
           </q-item-section>
@@ -47,7 +47,7 @@
             <q-item-label>Done</q-item-label>
           </q-item-section>
         </q-item>
-        <q-item clickable to="/trash">
+        <q-item clickable to="/trash" exact>
           <q-item-section avatar>
             <q-icon name="delete" />
           </q-item-section>
@@ -65,17 +65,12 @@
 </template>
 
 <script>
-import { openURL } from 'quasar'
-
 export default {
   name: 'MyLayout',
   data () {
     return {
       leftDrawerOpen: this.$q.platform.is.desktop
     }
-  },
-  methods: {
-    openURL
   }
 }
 </script>
