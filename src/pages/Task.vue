@@ -24,7 +24,7 @@
       </div>
     </q-list>
 
-    <q-dialog v-model="dialogTask" persistent>
+    <q-dialog v-model="dialogTask" persistent q-pb-xl>
       <q-card style="min-width: 320px">
         <q-card-section>
           <div class="text-h6">{{ headerDialog }}</div>
