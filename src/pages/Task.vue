@@ -15,8 +15,15 @@
               <q-item-label caption lines="2">{{ task.description }}</q-item-label>
             </q-item-section>
 
-            <q-item-section side top>
-              <q-item-label caption>{{ task.date }}</q-item-label>
+            <q-item-section side>
+              <div class="row">
+                <div class="col-auto q-mr-sm">
+                  <q-icon name="today" size="20px"/>
+                </div>
+                <div class="col self-center">
+                  <q-item-label caption>{{ task.date }}</q-item-label>
+                </div>
+              </div>
             </q-item-section>
           </q-item>
         </q-slide-item>
@@ -87,13 +94,11 @@ export default {
       task: {
         title: '',
         description: '',
-        date: ''
+        date: '',
+        done: false
       },
       taskID: null,
-      edit: false,
-      done: false,
-      dialogTask: false,
-      headerDialog: 'Create your task'
+      dialogTask: false
     }
   },
   methods: {
@@ -109,7 +114,6 @@ export default {
       }
       // this.dialogTask = false
       this.$q.localStorage.set('tasks', this.tasks)
-      this.headerDialog = 'Create your task'
       this.task = {}
     },
     moveTrash ({ reset }, index) {
