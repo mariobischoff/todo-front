@@ -1,5 +1,5 @@
 <template>
-  <q-page class="container">
+  <q-page class="q-pa-md">
     <q-list>
       <div v-for="(task, index) in tasks" :key="index">
         <q-slide-item right-color="red" @left="opt => moveDone(opt, index)" @right="opt => moveTrash(opt, index)">
@@ -9,7 +9,7 @@
           <template v-slot:right>
             <q-icon name="delete" />
           </template>
-          <q-item>
+          <q-item :class="{ done: task.done }">
             <q-item-section>
               <q-item-label>{{ task.title }}</q-item-label>
               <q-item-label caption lines="2">{{ task.description }}</q-item-label>
@@ -76,16 +76,14 @@
   </q-page>
 </template>
 
-<style>
-  .container {
-    padding: 10px
-  }
-  ul {
-    list-style: none
-  }
+<style lang="stylus" scoped>
+  .done
+    background $green-1
 </style>
 
 <script>
+import _ from 'lodash'
+
 export default {
   name: 'Task',
   data () {
@@ -99,6 +97,14 @@ export default {
       },
       taskID: null,
       dialogTask: false
+    }
+  },
+  computed: {
+    tasksDone () {
+      return _.takeWhile(this.tasks, { done: true })
+      // return this.tasks.filter((task) => {
+      //   return task.done === true
+      // })
     }
   },
   methods: {
@@ -117,18 +123,22 @@ export default {
       this.task = {}
     },
     moveTrash ({ reset }, index) {
-      this.tasks.splice(index, 1)
-      this.$q.notify('Task removed')
+      // this.tasks.splice(index, 1)
+      this.tasks[index].done = false
+      this.$q.notify('Task Open')
+      this.$q.localStorage.set('tasks', this.tasks)
       this.finalize(reset)
     },
     moveDone ({ reset }, index) {
-      this.$q.notify('Index: ' + index)
+      this.$q.notify('Task Done')
+      this.tasks[index].done = true
+      this.$q.localStorage.set('tasks', this.tasks)
       this.finalize(reset)
     },
     finalize (reset) {
       this.timer = setTimeout(() => {
         reset()
-      }, 1000)
+      }, 500)
     },
     loadTasks () {
       if (!this.$q.localStorage.getItem('tasks')) {
