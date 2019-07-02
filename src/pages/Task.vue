@@ -1,5 +1,6 @@
 <template>
   <q-page class="q-pa-md">
+    <q-btn flat @click="getTasks">Pegar Tarefas</q-btn>
     <q-list>
       <div v-for="(task, index) in tasks" :key="index">
         <q-slide-item right-color="red" @left="opt => moveDone(opt, index)" @right="opt => moveTrash(opt, index)">
@@ -9,7 +10,7 @@
           <template v-slot:right>
             <q-icon name="delete" />
           </template>
-          <q-item :class="{ done: task.done }">
+          <q-item clickable v-ripple :class="{ done: task.done, notDone: !task.done }">
             <q-item-section>
               <q-item-label>{{ task.title }}</q-item-label>
               <q-item-label caption lines="2">{{ task.description }}</q-item-label>
@@ -34,7 +35,7 @@
     <q-dialog v-model="dialogTask" persistent q-pb-xl>
       <q-card style="min-width: 320px">
         <q-card-section>
-          <div class="text-h6">{{ headerDialog }}</div>
+          <div class="text-h6">set up a Task</div>
         </q-card-section>
 
         <q-card-section class="q-gutter-lg">
@@ -66,7 +67,7 @@
 
         <q-card-actions align="right" class="text-primary">
           <q-btn flat label="Cancel" @click="onCloseDialog" v-close-popup />
-          <q-btn flat label="Commit" @click="saveTask" v-close-popup />
+          <q-btn flat label="Commit" @click="addTask" v-close-popup />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -79,51 +80,47 @@
 <style lang="stylus" scoped>
   .done
     background $green-1
+  .notDone
+    background $red-1
 </style>
 
 <script>
-import _ from 'lodash'
+// import _ from 'lodash'
+import axios from 'axios'
 
 export default {
   name: 'Task',
   data () {
     return {
-      tasks: [],
       task: {
         title: '',
         description: '',
         date: '',
         done: false
       },
-      taskID: null,
+      tasks: null,
       dialogTask: false
     }
   },
   computed: {
-    tasksDone () {
-      return _.takeWhile(this.tasks, { done: true })
-      // return this.tasks.filter((task) => {
-      //   return task.done === true
-      // })
+    testeVuex () {
+      return this.$store.getters['tasks/getTask']
     }
   },
   methods: {
-    saveTask () {
-      if (this.task.title === '') {
-        return
-      }
-      if (this.taskID) {
-        this.tasks[this.taskID] = this.task
-        this.taskID = null
-      } else {
-        this.tasks.push(JSON.parse(JSON.stringify(this.task)))
-      }
-      // this.dialogTask = false
-      this.$q.localStorage.set('tasks', this.tasks)
+    getTasks () {
+      axios({
+        method: 'GET',
+        url: 'https://jsonplaceholder.typicode.com/todos'
+      }).then((response) => {
+        this.tasks = response.data
+      })
+    },
+    addTask () {
+      this.$store.commit('tasks/saveTask', JSON.parse(JSON.stringify(this.task)))
       this.task = {}
     },
     moveTrash ({ reset }, index) {
-      // this.tasks.splice(index, 1)
       this.tasks[index].done = false
       this.$q.notify('Task Open')
       this.$q.localStorage.set('tasks', this.tasks)
@@ -146,20 +143,10 @@ export default {
       }
       this.tasks = this.$q.localStorage.getItem('tasks')
     },
-    editTask (index) {
-      this.dialogTask = true
-      this.headerDialog = 'Edit your task'
-      this.taskID = index
-      this.task = this.$q.localStorage.getItem('tasks')[index]
-    },
     onCloseDialog () {
       this.task = {}
       this.taskID = null
-      this.headerDialog = 'Create your task'
     }
-  },
-  created () {
-    this.loadTasks()
   }
 }
 </script>
