@@ -1,4 +1,4 @@
-export function salvarUser (state, payload) {
+export function saveUser (state, payload) {
   state.user = payload
 }
 

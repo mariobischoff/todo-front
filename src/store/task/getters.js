@@ -1,3 +1,3 @@
-export function getTask (state) {
+export function getAllTasks (state) {
   return state.tasks
 }

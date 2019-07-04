@@ -1,8 +1,7 @@
 <template>
   <q-page class="q-pa-md">
-    <q-btn flat @click="getTasks">Pegar Tarefas</q-btn>
     <q-list>
-      <div v-for="(task, index) in tasks" :key="index">
+      <div v-for="(task, index) in allTask" :key="index">
         <q-slide-item right-color="red" @left="opt => moveDone(opt, index)" @right="opt => moveTrash(opt, index)">
           <template v-slot:left>
             <q-icon name="done" />
@@ -86,7 +85,7 @@
 
 <script>
 // import _ from 'lodash'
-import axios from 'axios'
+// import axios from 'axios'
 
 export default {
   name: 'Task',
@@ -103,22 +102,19 @@ export default {
     }
   },
   computed: {
-    testeVuex () {
-      return this.$store.getters['tasks/getTask']
+    allTask () {
+      return this.$store.getters['tasks/getAllTasks']
     }
   },
   methods: {
-    getTasks () {
-      axios({
-        method: 'GET',
-        url: 'https://jsonplaceholder.typicode.com/todos'
-      }).then((response) => {
-        this.tasks = response.data
-      })
-    },
     addTask () {
       this.$store.commit('tasks/saveTask', JSON.parse(JSON.stringify(this.task)))
-      this.task = {}
+      this.task = {
+        title: '',
+        description: '',
+        date: '',
+        done: false
+      }
     },
     moveTrash ({ reset }, index) {
       this.tasks[index].done = false
