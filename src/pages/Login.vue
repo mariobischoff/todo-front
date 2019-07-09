@@ -7,8 +7,8 @@
 
       <q-card-section class="q-gutter-md">
         <q-input
-          label="Username"
-          v-model="username"
+          label="Email"
+          v-model="dataLogin.email"
           outlined
           class="input"
         >
@@ -16,7 +16,7 @@
         <q-input
           label="Password"
           :type="showPw ? 'text' : 'password'"
-          v-model="password"
+          v-model="dataLogin.password"
           outlined
           class="input"
         >
@@ -32,6 +32,7 @@
 
       <q-card-actions class="q-gutter-sm column items-center items-stretch" style="width: 100%">
         <q-btn
+          @click="doLogin"
           size="lg"
           color="green-7"
           class="btn-login col"
@@ -63,12 +64,31 @@
 </style>
 
 <script>
+import { mapActions } from 'vuex'
+import { SessionStorage } from 'quasar'
+
 export default {
   data () {
     return {
-      username: '',
-      password: '',
+      dataLogin: {
+        email: '',
+        password: ''
+      },
       showPw: false
+    }
+  },
+  methods: {
+    ...mapActions(['users/login']),
+    doLogin () {
+      this['users/login'](this.dataLogin)
+        .then((data) => {
+          console.log(data)
+          SessionStorage.set('token', data.token)
+          this.$router.push('/')
+        })
+        .catch((err) => {
+          console.log(err)
+        })
     }
   }
 }

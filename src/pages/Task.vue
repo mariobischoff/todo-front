@@ -86,6 +86,7 @@
 <script>
 // import _ from 'lodash'
 // import axios from 'axios'
+import { mapActions } from 'vuex'
 
 export default {
   name: 'Task',
@@ -101,12 +102,22 @@ export default {
       dialogTask: false
     }
   },
+  created () {
+    this.getAllTasks()
+  },
   computed: {
     allTask () {
-      return this.$store.getters['tasks/getAllTasks']
+      return []
     }
   },
   methods: {
+    ...mapActions(['tasks/getAll']),
+    getAllTasks () {
+      this['tasks/getAll']()
+        .then((response) => {
+          console.log(response)
+        })
+    },
     addTask () {
       this.$store.commit('tasks/saveTask', JSON.parse(JSON.stringify(this.task)))
       this.task = {

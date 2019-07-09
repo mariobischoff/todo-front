@@ -9,14 +9,14 @@
         <q-card-section class="q-gutter-md">
           <q-input
             label="Username"
-            v-model="username"
+            v-model="loginData.username"
             outlined
             class="input"
           >
           </q-input>
           <q-input
             label="Email"
-            v-model="email"
+            v-model="loginData.email"
             outlined
             class="input"
           >
@@ -24,7 +24,7 @@
           <q-input
             label="Password"
             :type="showPw ? 'text' : 'password'"
-            v-model="password"
+            v-model="loginData.password"
             outlined
             class="input"
           >
@@ -71,10 +71,14 @@
 export default {
   data () {
     return {
-      username: '',
-      email: '',
-      password: ''
+      loginData: {
+        username: '',
+        email: '',
+        password: ''
+      }
     }
+  },
+  methods: {
   }
 }
 </script>
