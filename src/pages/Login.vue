@@ -65,29 +65,34 @@
 
 <script>
 import { mapActions } from 'vuex'
-import { SessionStorage } from 'quasar'
+// import { SessionStorage } from 'quasar'
 
 export default {
   data () {
     return {
       dataLogin: {
-        email: '',
-        password: ''
+        email: 'alves1234@gmail.com',
+        password: '1234'
       },
+      url: 'http://localhost:3000/user/login',
       showPw: false
     }
   },
   methods: {
-    ...mapActions(['users/login']),
+    ...mapActions(['users/todoApi', 'users/doLogin']),
     doLogin () {
-      this['users/login'](this.dataLogin)
-        .then((data) => {
-          console.log(data)
-          SessionStorage.set('token', data.token)
+      const DATA = this.dataLogin
+      const URL = this.url
+      const ID = null
+      const ACTION = 'save'
+      this['users/doLogin']({ DATA, URL, ID, ACTION })
+        .then((response) => {
           this.$router.push('/')
         })
         .catch((err) => {
-          console.log(err)
+          this.$q.notify({
+            message: 'Deu alguma pane ' + err
+          })
         })
     }
   }

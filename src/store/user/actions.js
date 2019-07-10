@@ -1,10 +1,8 @@
-import { axiosInstance } from '../../boot/axios'
-export function register (context) {
-}
+import { apiRequest } from '../../services'
 
-export function login (context, payload) {
-  return axiosInstance({ method: 'post', url: 'user/login', data: payload })
-    .then(response => {
-      return response.data
+export function doLogin (context, payload) {
+  return apiRequest(payload)
+    .then((response) => {
+      context.commit('setToken', response.token)
     })
 }

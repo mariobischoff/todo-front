@@ -103,7 +103,7 @@ export default {
     }
   },
   created () {
-    this.getAllTasks()
+    // this.getAllTasks()
   },
   computed: {
     allTask () {
