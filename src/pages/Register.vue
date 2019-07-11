@@ -8,15 +8,15 @@
 
         <q-card-section class="q-gutter-md">
           <q-input
-            label="Username"
-            v-model="loginData.username"
+            label="Name"
+            v-model="registerData.name"
             outlined
             class="input"
           >
           </q-input>
           <q-input
             label="Email"
-            v-model="loginData.email"
+            v-model="registerData.email"
             outlined
             class="input"
           >
@@ -24,7 +24,23 @@
           <q-input
             label="Password"
             :type="showPw ? 'text' : 'password'"
-            v-model="loginData.password"
+            v-model="registerData.password"
+            outlined
+            class="input"
+          >
+            <template v-slot:append>
+              <q-icon
+                :name="showPw ? 'visibility' : 'visibility_off'"
+                class="cursor-pointer"
+                @click="showPw = !showPw"
+              />
+            </template>
+          </q-input>
+
+          <q-input
+            label="Repassword"
+            :type="showPw ? 'text' : 'password'"
+            v-model="registerData.repassword"
             outlined
             class="input"
           >
@@ -41,6 +57,7 @@
         <q-card-actions>
           <div class="q-gutter-sm column items-center items-stretch" style="width: 100%">
             <q-btn
+              @click="doRegister"
               color="green-7"
               class="btn-create"
             >
@@ -68,17 +85,37 @@
 </style>
 
 <script>
+import { mapActions } from 'vuex'
+
 export default {
   data () {
     return {
-      loginData: {
+      registerData: {
         username: '',
         email: '',
         password: ''
-      }
+      },
+      showPw: false,
+      urlRegister: 'http://localhost:3000/user/register/'
     }
   },
   methods: {
+    ...mapActions(['todo/doRegister']),
+    doRegister () {
+      const DATA = this.registerData
+      const URL = this.urlRegister
+      const ID = null
+      const ACTION = 'save'
+      this['todo/doRegister']({ DATA, URL, ID, ACTION })
+        .then((response) => {
+          this.$router.push('/auth/login')
+        })
+        .catch((err) => {
+          this.$q.notify({
+            message: 'Deu alguma pane ' + err
+          })
+        })
+    }
   }
 }
 </script>

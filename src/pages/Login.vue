@@ -73,19 +73,21 @@ export default {
         email: 'mariobischoffneto@gmail.com',
         password: '3562'
       },
-      url: 'http://localhost:3000/user/login',
+      urlLogin: 'http://localhost:3000/user/login',
+      urlTask: 'http://localhost:3000/task/',
       showPw: false
     }
   },
   methods: {
-    ...mapActions(['todo/doLogin']),
+    ...mapActions(['todo/doLogin', 'todo/callTask']),
     doLogin () {
       const DATA = this.dataLogin
-      const URL = this.url
+      const URL = this.urlLogin
       const ID = null
       const ACTION = 'save'
       this['todo/doLogin']({ DATA, URL, ID, ACTION })
         .then((response) => {
+          this.callTasks()
           this.$router.push('/')
         })
         .catch((err) => {
@@ -93,6 +95,16 @@ export default {
             message: 'Deu alguma pane ' + err
           })
         })
+    },
+    callTasks () {
+      const URL = this.urlTask
+      const ID = null
+      const ACTION = 'get'
+      this['todo/callTask']({ URL, ID, ACTION })
+        .then(() => console.log('pegou as tarefas'))
+        .catch(() => this.$q.notify({
+          message: 'Deu alguma outra pane'
+        }))
     }
   }
 }

@@ -53,11 +53,11 @@
             label="description"
           />
 
-          <q-input filled v-model="task.date" label="date of your task">
+          <q-input filled v-model="task.doneAt" label="date of your task">
             <template v-slot:append>
               <q-icon name="event" class="cursor-pointer">
                 <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
-                  <q-date v-model="task.date" @input="() => $refs.qDateProxy.hide()" mask="DD/MM/YYYY"/>
+                  <q-date v-model="task.doneAt" @input="() => $refs.qDateProxy.hide()" mask="DD/MM/YYYY"/>
                 </q-popup-proxy>
               </q-icon>
             </template>
@@ -85,6 +85,7 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
+import moment from 'moment'
 
 export default {
   name: 'Task',
@@ -93,7 +94,7 @@ export default {
       task: {
         title: '',
         description: '',
-        date: '',
+        doneAt: '',
         done: false
       },
       tasks: null,
@@ -102,7 +103,6 @@ export default {
     }
   },
   created () {
-    this.callTasks()
   },
   computed: {
     allTask () {
@@ -113,17 +113,9 @@ export default {
     ...mapActions(['todo/callTask', 'todo/saveTask']),
     ...mapGetters(['todo/getUser']),
     ...mapGetters(['todo/getAllTask']),
-    callTasks () {
-      const URL = this.url
-      const ID = null
-      const ACTION = 'get'
-      this['todo/callTask']({ URL, ID, ACTION })
-        .then(() => console.log('deu certo'))
-        .catch(() => this.$q.notify({
-          message: 'Deu alguma outra pane'
-        }))
-    },
     addTask () {
+      let date = this.task.doneAt.split('/').join('-')
+      this.task.doneAt = moment(date, 'DD-MM-YYYY').toString()
       const DATA = this.task
       const URL = this.url
       const ID = null
@@ -133,7 +125,7 @@ export default {
           this.task = {
             title: '',
             description: '',
-            date: '',
+            doneAt: '',
             done: false
           }
           this.$q.notify({

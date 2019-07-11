@@ -1,6 +1,10 @@
 import { apiRequest } from '../../services'
 import { SessionStorage } from 'quasar'
 
+export function doRegister (context, payload) {
+  return apiRequest(payload)
+}
+
 export function doLogin (context, payload) {
   return apiRequest(payload)
     .then((response) => {
