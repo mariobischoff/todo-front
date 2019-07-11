@@ -27,8 +27,8 @@
       <q-avatar size="80px">
         <img src="https://forum.edencraft.com.br/download/file.php?avatar=6926_1514724632.jpg" />
       </q-avatar>
-      <h1>Mario</h1>
-      <p>mariobischoff@gmail.com</p>
+      <h1>{{ user.name }}</h1>
+      <p>{{ user.email }}</p>
     </div>
       <q-list>
         <q-item clickable to="/" exact>
@@ -65,11 +65,21 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+
 export default {
   name: 'MyLayout',
   data () {
     return {
       leftDrawerOpen: this.$q.platform.is.desktop
+    }
+  },
+  methods: {
+    ...mapGetters(['todo/getUser'])
+  },
+  computed: {
+    user () {
+      return this['todo/getUser']()
     }
   }
 }

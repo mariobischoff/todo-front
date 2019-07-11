@@ -84,9 +84,7 @@
 </style>
 
 <script>
-// import _ from 'lodash'
-// import axios from 'axios'
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 
 export default {
   name: 'Task',
@@ -99,33 +97,50 @@ export default {
         done: false
       },
       tasks: null,
-      dialogTask: false
+      dialogTask: false,
+      url: 'http://localhost:3000/task/'
     }
   },
   created () {
-    // this.getAllTasks()
+    this.callTasks()
   },
   computed: {
     allTask () {
-      return []
+      return this['todo/getAllTask']()
     }
   },
   methods: {
-    ...mapActions(['tasks/getAll']),
-    getAllTasks () {
-      this['tasks/getAll']()
-        .then((response) => {
-          console.log(response)
-        })
+    ...mapActions(['todo/callTask', 'todo/saveTask']),
+    ...mapGetters(['todo/getUser']),
+    ...mapGetters(['todo/getAllTask']),
+    callTasks () {
+      const URL = this.url
+      const ID = null
+      const ACTION = 'get'
+      this['todo/callTask']({ URL, ID, ACTION })
+        .then(() => console.log('deu certo'))
+        .catch(() => this.$q.notify({
+          message: 'Deu alguma outra pane'
+        }))
     },
     addTask () {
-      this.$store.commit('tasks/saveTask', JSON.parse(JSON.stringify(this.task)))
-      this.task = {
-        title: '',
-        description: '',
-        date: '',
-        done: false
-      }
+      const DATA = this.task
+      const URL = this.url
+      const ID = null
+      const ACTION = 'save'
+      this['todo/saveTask']({ DATA, URL, ID, ACTION })
+        .then(() => {
+          this.task = {
+            title: '',
+            description: '',
+            date: '',
+            done: false
+          }
+          this.$q.notify({
+            message: 'Task saved'
+          })
+        })
+        .catch(() => console.log('save error'))
     },
     moveTrash ({ reset }, index) {
       this.tasks[index].done = false
