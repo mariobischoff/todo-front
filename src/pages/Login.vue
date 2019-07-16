@@ -9,7 +9,6 @@
         <q-input
           label="Email"
           v-model="dataLogin.email"
-          outlined
           class="input"
         >
         </q-input>
@@ -17,7 +16,6 @@
           label="Password"
           :type="showPw ? 'text' : 'password'"
           v-model="dataLogin.password"
-          outlined
           class="input"
         >
           <template v-slot:append>
@@ -58,6 +56,7 @@
 .container
   display flex
   .card-container
+    width 350px
     padding 1em
     display flex
     flex-direction column
@@ -73,7 +72,7 @@ export default {
         email: 'mariobischoffneto@gmail.com',
         password: '3562'
       },
-      urlLogin: 'http://localhost:3000/user/login',
+      urlLogin: '/user/login',
       urlTask: 'http://localhost:3000/task/',
       showPw: false
     }
@@ -87,7 +86,6 @@ export default {
       const ACTION = 'save'
       this['todo/doLogin']({ DATA, URL, ID, ACTION })
         .then((response) => {
-          this.callTasks()
           this.$router.push('/')
         })
         .catch((err) => {
@@ -95,16 +93,6 @@ export default {
             message: 'Deu alguma pane ' + err
           })
         })
-    },
-    callTasks () {
-      const URL = this.urlTask
-      const ID = null
-      const ACTION = 'get'
-      this['todo/callTask']({ URL, ID, ACTION })
-        .then(() => console.log('pegou as tarefas'))
-        .catch(() => this.$q.notify({
-          message: 'Deu alguma outra pane'
-        }))
     }
   }
 }

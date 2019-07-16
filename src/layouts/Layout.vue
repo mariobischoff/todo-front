@@ -75,11 +75,11 @@ export default {
     }
   },
   methods: {
-    ...mapGetters(['todo/getUser'])
+    ...mapGetters(['todo/GET_USER'])
   },
   computed: {
     user () {
-      return this['todo/getUser']()
+      return this['todo/GET_USER']()
     }
   }
 }

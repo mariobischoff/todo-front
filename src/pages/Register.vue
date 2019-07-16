@@ -10,48 +10,24 @@
           <q-input
             label="Name"
             v-model="registerData.name"
-            outlined
-            class="input"
-          >
-          </q-input>
+            class="input"/>
+
           <q-input
             label="Email"
             v-model="registerData.email"
-            outlined
-            class="input"
-          >
-          </q-input>
+            class="input"/>
+
           <q-input
             label="Password"
-            :type="showPw ? 'text' : 'password'"
+            type="password"
             v-model="registerData.password"
-            outlined
-            class="input"
-          >
-            <template v-slot:append>
-              <q-icon
-                :name="showPw ? 'visibility' : 'visibility_off'"
-                class="cursor-pointer"
-                @click="showPw = !showPw"
-              />
-            </template>
-          </q-input>
+            class="input"/>
 
           <q-input
             label="Repassword"
-            :type="showPw ? 'text' : 'password'"
+            type="password"
             v-model="registerData.repassword"
-            outlined
-            class="input"
-          >
-            <template v-slot:append>
-              <q-icon
-                :name="showPw ? 'visibility' : 'visibility_off'"
-                class="cursor-pointer"
-                @click="showPw = !showPw"
-              />
-            </template>
-          </q-input>
+            class="input"/>
         </q-card-section>
 
         <q-card-actions>
@@ -79,6 +55,7 @@
 .container
   display flex
   .card-container
+    width 350px
     padding 1em
     display flex
     flex-direction column
@@ -91,11 +68,10 @@ export default {
   data () {
     return {
       registerData: {
-        username: '',
+        name: '',
         email: '',
         password: ''
       },
-      showPw: false,
       urlRegister: 'http://localhost:3000/user/register/'
     }
   },
