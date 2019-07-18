@@ -1,7 +1,7 @@
 <template>
   <q-page class="q-pa-md">
     <q-list>
-      <div v-for="(task, index) in allTask" :key="index">
+      <div v-for="(task, index) in tasks" :key="index">
         <q-slide-item right-color="red" @left="opt => moveDone(opt, task)" @right="opt => moveOpen(opt, task)">
           <template v-slot:left>
             <q-icon name="done" />
@@ -42,22 +42,22 @@
             filled
             ref="input"
             autofocus
-            v-model="task.title"
+            v-model="newTask.title"
             label="type here!"
             @keyup.enter="saveTask()"
           />
 
           <q-input
             filled
-            v-model="task.description"
+            v-model="newTask.description"
             label="description"
           />
 
-          <q-input filled v-model="task.doneAt" label="date of your task">
+          <q-input filled v-model="newTask.doneAt" label="date of your task">
             <template v-slot:append>
               <q-icon name="event" class="cursor-pointer">
                 <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
-                  <q-date v-model="task.doneAt" @input="() => $refs.qDateProxy.hide()" mask="DD/MM/YYYY"/>
+                  <q-date v-model="newTask.doneAt" @input="() => $refs.qDateProxy.hide()" mask="DD/MM/YYYY"/>
                 </q-popup-proxy>
               </q-icon>
             </template>
@@ -84,56 +84,51 @@
 </style>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapState } from 'vuex'
 import moment from 'moment'
 
 export default {
   name: 'Task',
   data () {
     return {
-      task: {
+      newTask: {
         title: '',
         description: '',
         doneAt: '',
         status: 'open'
       },
-      tasks: null,
       dialogTask: false,
-      urlTask: 'http://localhost:3000/task'
+      urlTask: '/task'
     }
   },
   created () {
     this.callTasks()
   },
   computed: {
-    allTask () {
-      return this['todo/GET_ALL_TASK']()
-    }
+    ...mapState('task', ['tasks'])
   },
   methods: {
-    ...mapActions(['todo/callTask', 'todo/saveTask', 'todo/test']),
-    ...mapGetters(['todo/GET_USER']),
-    ...mapGetters(['todo/GET_ALL_TASK']),
+    ...mapActions(['task/getAll', 'task/save']),
     callTasks () {
       const URL = this.urlTask
       const ID = null
       const ACTION = 'get'
-      this['todo/callTask']({ URL, ID, ACTION })
+      this['task/getAll']({ URL, ID, ACTION })
         .then(() => console.log('pegou as tarefas'))
         .catch(() => this.$q.notify({
           message: 'Deu alguma outra pane'
         }))
     },
     addTask () {
-      let date = this.task.doneAt.split('/').join('-')
-      this.task.doneAt = moment(date, 'DD-MM-YYYY').toString()
-      let DATA = this.task
+      let date = this.newTask.doneAt.split('/').join('-')
+      this.newTask.doneAt = moment(date, 'DD-MM-YYYY').toString()
+      let DATA = this.newTask
       let URL = this.urlTask
       let ID = null
       let ACTION = 'save'
-      this['todo/saveTask']({ DATA, URL, ID, ACTION })
+      this['task/save']({ DATA, URL, ID, ACTION })
         .then(() => {
-          this.task = {
+          this.newTask = {
             title: '',
             description: '',
             doneAt: '',
@@ -186,12 +181,6 @@ export default {
       this.timer = setTimeout(() => {
         reset()
       }, 500)
-    },
-    loadTasks () {
-      if (!this.$q.localStorage.getItem('tasks')) {
-        return
-      }
-      this.tasks = this.$q.localStorage.getItem('tasks')
     },
     onCloseDialog () {
       this.task = {}

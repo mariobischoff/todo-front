@@ -2,7 +2,7 @@ import axios from 'axios'
 import { SessionStorage } from 'quasar'
 
 const axiosInstance = axios.create({
-  baseURL: 'http://localhost:3000/'
+  baseURL: 'https://stormy-springs-97309.herokuapp.com/'
 })
 
 axiosInstance.interceptors.request.use(

@@ -65,21 +65,15 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
-
 export default {
   name: 'MyLayout',
   data () {
     return {
-      leftDrawerOpen: this.$q.platform.is.desktop
-    }
-  },
-  methods: {
-    ...mapGetters(['todo/GET_USER'])
-  },
-  computed: {
-    user () {
-      return this['todo/GET_USER']()
+      leftDrawerOpen: this.$q.platform.is.desktop,
+      user: {
+        name: 'Mario',
+        email: 'mariobischoff@gmail.com'
+      }
     }
   }
 }

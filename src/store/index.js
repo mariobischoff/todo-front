@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-
-import todo from './todo'
+import user from './modules/user'
+import task from './modules/task'
 
 Vue.use(Vuex)
 
@@ -13,7 +13,8 @@ Vue.use(Vuex)
 export default function (/* { ssrContext } */) {
   const Store = new Vuex.Store({
     modules: {
-      todo
+      user,
+      task
     },
 
     // enable strict mode (adds overhead!)

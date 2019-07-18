@@ -68,23 +68,22 @@ import { mapActions } from 'vuex'
 export default {
   data () {
     return {
-      dataLogin: {
-        email: 'mariobischoffneto@gmail.com',
-        password: '3562'
-      },
       urlLogin: '/user/login',
-      urlTask: 'http://localhost:3000/task/',
+      dataLogin: {
+        email: 'alves1234@gmail.com',
+        password: '1234'
+      },
       showPw: false
     }
   },
   methods: {
-    ...mapActions(['todo/doLogin', 'todo/callTask']),
+    ...mapActions(['user/doLogin']),
     doLogin () {
       const DATA = this.dataLogin
       const URL = this.urlLogin
       const ID = null
       const ACTION = 'save'
-      this['todo/doLogin']({ DATA, URL, ID, ACTION })
+      this['user/doLogin']({ DATA, URL, ID, ACTION })
         .then((response) => {
           this.$router.push('/')
         })
