@@ -43,8 +43,20 @@ const actions = {
       if (id) {
         let tasks = JSON.parse(JSON.stringify(state.tasks))
         let index = _.findIndex(tasks, { '_id': id })
-        console.log(index)
         tasks.splice(index, 1)
+        commit('setTasks', tasks)
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  },
+  async move ({ commit, state }, payload) {
+    try {
+      let task = await apiRequest(payload)
+      if (task) {
+        let tasks = JSON.parse(JSON.stringify(state.tasks))
+        let index = _.findIndex(tasks, { '_id': payload.ID })
+        tasks[index] = task
         commit('setTasks', tasks)
       }
     } catch (error) {

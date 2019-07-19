@@ -2,7 +2,7 @@
   <q-page class="q-pa-md">
     <q-list>
       <div v-for="(task, index) in tasks" :key="index">
-        <q-slide-item right-color="red" @left="opt => moveDone(opt, task)" @right="opt => moveOpen(opt, task)">
+        <q-slide-item right-color="red" @left="opt => moveDone(opt, task._id)" @right="opt => moveOpen(opt, task._id)">
           <template v-slot:left>
             <q-icon name="done" />
           </template>
@@ -18,7 +18,7 @@
             <q-item-section side>
               <div class="row">
                 <div class="col-auto q-mr-sm">
-                  <q-icon name="delete" size="25px" color="red" @click="removeTask(task._id)"/>
+                  <q-icon name="delete" size="25px" color="red" @click="moveFrom(task._id, 'trash')"/>
                 </div>
                 <div class="col self-center">
                   <q-item-label caption>{{ task.date }}</q-item-label>
@@ -108,7 +108,7 @@ export default {
     ...mapState('task', ['tasks'])
   },
   methods: {
-    ...mapActions(['task/getAll', 'task/add', 'task/remove']),
+    ...mapActions(['task/getAll', 'task/add', 'task/remove', 'task/move']),
     callTasks () {
       const URL = this.urlTask
       const ID = null
@@ -154,34 +154,35 @@ export default {
         })
         .catch((error) => console.log('error remove ', error))
     },
-    moveFrom (task, from) {
+    moveFrom (id, from) {
       let ACTION = 'save'
-      let ID = task._id
+      let ID = id
       let URL = this.urlTask
+      let status = null
       switch (from) {
         case 'trash':
-          task.status = 'trash'
+          status = 'trash'
           break
         case 'open':
-          task.status = 'open'
+          status = 'open'
           break
         case 'done':
-          task.status = 'done'
+          status = 'done'
           break
       }
-      let DATA = task
-      this['todo/saveTask']({ DATA, URL, ID, ACTION })
+      let DATA = { status: status }
+      this['task/move']({ DATA, URL, ID, ACTION })
         .then(() => {
-          this.$q.notify('move to ' + task.status)
+          this.$q.notify('move to ' + status)
         })
         .catch(() => console.log('erro ao mover para o lixo'))
     },
-    moveOpen ({ reset }, task) {
-      this.moveFrom(task, 'open')
+    moveOpen ({ reset }, id) {
+      this.moveFrom(id, 'open')
       this.finalize(reset)
     },
-    moveDone ({ reset }, task) {
-      this.moveFrom(task, 'done')
+    moveDone ({ reset }, id) {
+      this.moveFrom(id, 'done')
       this.finalize(reset)
     },
     finalize (reset) {

@@ -16,12 +16,15 @@ const mutations = {
 }
 
 const actions = {
-  async doLogin ({ commit }, payload) {
+  async login ({ commit }, payload) {
     let response = await apiRequest(payload)
     if (response.token) {
       commit('setToken', response.token)
       SessionStorage.set('token', response.token)
     }
+  },
+  logout ({ commit }) {
+    commit('seToken', '')
   }
 }
 

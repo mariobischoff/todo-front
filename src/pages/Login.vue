@@ -77,16 +77,14 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['user/doLogin']),
+    ...mapActions(['user/login']),
     doLogin () {
       const DATA = this.dataLogin
       const URL = this.urlLogin
       const ID = null
       const ACTION = 'save'
-      this['user/doLogin']({ DATA, URL, ID, ACTION })
-        .then((response) => {
-          this.$router.push('/')
-        })
+      this['user/login']({ DATA, URL, ID, ACTION })
+        .then(() => { this.$router.push('/') })
         .catch((err) => {
           this.$q.notify({
             message: 'Deu alguma pane ' + err
