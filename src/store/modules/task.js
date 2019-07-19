@@ -1,4 +1,5 @@
 import { apiRequest } from './../../services'
+import _ from 'lodash'
 
 const state = {
   tasks: []
@@ -15,17 +16,39 @@ const mutations = {
 
 const actions = {
   async getAll ({ commit }, payload) {
-    let tasks = await apiRequest(payload)
-    if (tasks) {
-      commit('setTasks', tasks)
+    try {
+      let tasks = await apiRequest(payload)
+      if (tasks) {
+        commit('setTasks', tasks)
+      }
+    } catch (error) {
+      console.log(error)
     }
   },
-  async save ({ commit, state }, payload) {
-    let task = await apiRequest(payload)
-    if (task) {
-      let tasks = JSON.parse(JSON.stringify(state.tasks))
-      tasks.push(task)
-      commit('setTasks', tasks)
+  async add ({ commit, state }, payload) {
+    try {
+      let task = await apiRequest(payload)
+      if (task) {
+        let tasks = JSON.parse(JSON.stringify(state.tasks))
+        tasks.push(task)
+        commit('setTasks', tasks)
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  },
+  async remove ({ commit, state }, payload) {
+    try {
+      let id = await apiRequest(payload)
+      if (id) {
+        let tasks = JSON.parse(JSON.stringify(state.tasks))
+        let index = _.findIndex(tasks, { '_id': id })
+        console.log(index)
+        tasks.splice(index, 1)
+        commit('setTasks', tasks)
+      }
+    } catch (error) {
+      console.log(error)
     }
   }
 }

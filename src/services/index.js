@@ -20,14 +20,14 @@ const doRequest = (payload) => {
     case 'get':
       urlRequest.method = 'get'
       if (payload.ID) {
-        urlRequest.URL = payload.URL + '/' + payload.ID
+        urlRequest.url = payload.URL + '/' + payload.ID
       } else {
-        urlRequest.URL = payload.URL
+        urlRequest.url = payload.URL
       }
       break
     case 'delete':
       urlRequest.method = 'delete'
-      urlRequest.URL = payload.URL + '/' + payload.ID
+      urlRequest.url = payload.URL + '/' + payload.ID
       break
   }
   return urlRequest

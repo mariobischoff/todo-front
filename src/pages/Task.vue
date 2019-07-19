@@ -18,7 +18,7 @@
             <q-item-section side>
               <div class="row">
                 <div class="col-auto q-mr-sm">
-                  <q-icon name="delete" size="25px" color="red" @click="moveFrom(task, 'trash')"/>
+                  <q-icon name="delete" size="25px" color="red" @click="removeTask(task._id)"/>
                 </div>
                 <div class="col self-center">
                   <q-item-label caption>{{ task.date }}</q-item-label>
@@ -108,7 +108,7 @@ export default {
     ...mapState('task', ['tasks'])
   },
   methods: {
-    ...mapActions(['task/getAll', 'task/save']),
+    ...mapActions(['task/getAll', 'task/add', 'task/remove']),
     callTasks () {
       const URL = this.urlTask
       const ID = null
@@ -126,7 +126,7 @@ export default {
       let URL = this.urlTask
       let ID = null
       let ACTION = 'save'
-      this['task/save']({ DATA, URL, ID, ACTION })
+      this['task/add']({ DATA, URL, ID, ACTION })
         .then(() => {
           this.newTask = {
             title: '',
@@ -140,12 +140,19 @@ export default {
         })
         .catch(() => console.log('save error'))
     },
-    teste (i) {
-      const URL = this.urlTask
-      const ID = null
-      const ACTION = 'get'
-      this['todo/saveTask']({ URL, ID, ACTION })
-      // this.$store.commit('todo/DEL_TASK', i)
+    removeTask (id) {
+      let DATA = null
+      let URL = this.urlTask
+      let ID = id
+      let ACTION = 'delete'
+      console.log(ID)
+      this['task/remove']({ DATA, URL, ID, ACTION })
+        .then(() => {
+          this.$q.notify({
+            message: 'Task removed'
+          })
+        })
+        .catch((error) => console.log('error remove ', error))
     },
     moveFrom (task, from) {
       let ACTION = 'save'
