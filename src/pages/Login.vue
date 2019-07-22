@@ -9,7 +9,6 @@
         <q-input
           label="Email"
           v-model="dataLogin.email"
-          outlined
           class="input"
         >
         </q-input>
@@ -17,7 +16,6 @@
           label="Password"
           :type="showPw ? 'text' : 'password'"
           v-model="dataLogin.password"
-          outlined
           class="input"
         >
           <template v-slot:append>
@@ -32,6 +30,7 @@
 
       <q-card-actions class="q-gutter-sm column items-center items-stretch" style="width: 100%">
         <q-btn
+          push
           @click="doLogin"
           size="lg"
           color="green-7"
@@ -58,6 +57,7 @@
 .container
   display flex
   .card-container
+    width 350px
     padding 1em
     display flex
     flex-direction column
@@ -65,13 +65,14 @@
 
 <script>
 import { mapActions } from 'vuex'
+// import { SessionStorage } from 'quasar'
 
 export default {
   data () {
     return {
       dataLogin: {
-        email: 'mariobischoffneto@gmail.com',
-        password: '3562'
+        email: '',
+        password: ''
       },
       urlLogin: 'http://localhost:3000/user/login',
       urlTask: 'http://localhost:3000/task/',
@@ -87,7 +88,7 @@ export default {
       const ACTION = 'save'
       this['todo/doLogin']({ DATA, URL, ID, ACTION })
         .then((response) => {
-          this.callTasks()
+          console.log(response)
           this.$router.push('/')
         })
         .catch((err) => {

@@ -4,7 +4,7 @@ import { SessionStorage } from 'quasar'
 const axiosInstance = axios.create({
   baseURL: 'http://localhost:3000',
   headers: {
-    authorization: SessionStorage.getItem('token')
+    authorization: SessionStorage.getItem('token') || ''
   }
 })
 
