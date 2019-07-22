@@ -72,13 +72,8 @@ export default {
     return {
       urlLogin: '/user/login',
       dataLogin: {
-<<<<<<< HEAD
-        email: '',
-        password: ''
-=======
         email: 'alves1234@gmail.com',
         password: '1234'
->>>>>>> d8d45f1d550d25f7a7282560a98465f177d5d762
       },
       showPw: false
     }
@@ -90,16 +85,8 @@ export default {
       const URL = this.urlLogin
       const ID = null
       const ACTION = 'save'
-<<<<<<< HEAD
-      this['todo/doLogin']({ DATA, URL, ID, ACTION })
-        .then((response) => {
-          console.log(response)
-          this.$router.push('/')
-        })
-=======
       this['user/login']({ DATA, URL, ID, ACTION })
         .then(() => { this.$router.push('/') })
->>>>>>> d8d45f1d550d25f7a7282560a98465f177d5d762
         .catch((err) => {
           this.$q.notify({
             message: 'Deu alguma pane ' + err

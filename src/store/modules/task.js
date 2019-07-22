@@ -66,7 +66,15 @@ const actions = {
 }
 
 const getters = {
-
+  taskOpen (state) {
+    return _.filter(state.tasks, { 'status': 'open' })
+  },
+  taskDone (state) {
+    return _.filter(state.tasks, { 'status': 'done' })
+  },
+  taskTrash (state) {
+    return _.filter(state.tasks, { 'status': 'trash' })
+  }
 }
 
 export default {

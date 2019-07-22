@@ -2,15 +2,8 @@ import { SessionStorage } from 'quasar'
 
 const routes = [
   {
-    path: '/',
-    component: () => import('layouts/Layout.vue'),
-    beforeEnter: (to, from, next) => {
-      if (SessionStorage.getItem('token')) {
-        next()
-        return
-      }
-      next('/auth/login')
-    },
+    path: '/auth',
+    component: () => import('layouts/AuthLayout.vue'),
     children: [
       { path: 'login', name: 'login', component: () => import('pages/Login') },
       { path: 'register', name: 'register', component: () => import('pages/Register') }
@@ -21,7 +14,14 @@ const routes = [
     component: () => import('layouts/Layout.vue'),
     children: [
       { path: '', component: () => import('pages/Task.vue') }
-    ]
+    ],
+    beforeEnter: (to, from, next) => {
+      if (SessionStorage.getItem('token')) {
+        next()
+        return
+      }
+      next('/auth/login')
+    }
   }
 ]
 
