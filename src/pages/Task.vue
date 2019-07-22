@@ -1,15 +1,15 @@
 <template>
   <q-page class="q-pa-md">
     <q-list>
-      <div v-for="(task, index) in allTask" :key="index">
-        <q-slide-item right-color="red" @left="opt => moveDone(opt, index)" @right="opt => moveTrash(opt, index)">
+      <div v-for="(task, index) in tasks" :key="index">
+        <q-slide-item right-color="red" @left="opt => moveDone(opt, task._id)" @right="opt => moveOpen(opt, task._id)">
           <template v-slot:left>
             <q-icon name="done" />
           </template>
           <template v-slot:right>
-            <q-icon name="delete" />
+            <q-icon name="close" />
           </template>
-          <q-item clickable v-ripple :class="{ done: task.done, notDone: !task.done }">
+          <q-item clickable v-ripple :class="{ done: task.status == 'done', notDone: task.status == 'open' }">
             <q-item-section>
               <q-item-label>{{ task.title }}</q-item-label>
               <q-item-label caption lines="2">{{ task.description }}</q-item-label>
@@ -18,7 +18,7 @@
             <q-item-section side>
               <div class="row">
                 <div class="col-auto q-mr-sm">
-                  <q-icon name="today" size="20px"/>
+                  <q-icon name="delete" size="25px" color="red" @click="moveFrom(task._id, 'trash')"/>
                 </div>
                 <div class="col self-center">
                   <q-item-label caption>{{ task.date }}</q-item-label>
@@ -42,22 +42,22 @@
             filled
             ref="input"
             autofocus
-            v-model="task.title"
+            v-model="newTask.title"
             label="type here!"
             @keyup.enter="saveTask()"
           />
 
           <q-input
             filled
-            v-model="task.description"
+            v-model="newTask.description"
             label="description"
           />
 
-          <q-input filled v-model="task.doneAt" label="date of your task">
+          <q-input filled v-model="newTask.doneAt" label="date of your task">
             <template v-slot:append>
               <q-icon name="event" class="cursor-pointer">
                 <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
-                  <q-date v-model="task.doneAt" @input="() => $refs.qDateProxy.hide()" mask="DD/MM/YYYY"/>
+                  <q-date v-model="newTask.doneAt" @input="() => $refs.qDateProxy.hide()" mask="DD/MM/YYYY"/>
                 </q-popup-proxy>
               </q-icon>
             </template>
@@ -84,49 +84,55 @@
 </style>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapState } from 'vuex'
 import moment from 'moment'
 
 export default {
   name: 'Task',
   data () {
     return {
-      task: {
+      newTask: {
         title: '',
         description: '',
         doneAt: '',
-        done: false
+        status: 'open'
       },
-      tasks: null,
       dialogTask: false,
-      url: 'http://localhost:3000/task/'
+      urlTask: '/task'
     }
   },
   created () {
+    this.callTasks()
   },
   computed: {
-    allTask () {
-      return this['todo/getAllTask']()
-    }
+    ...mapState('task', ['tasks'])
   },
   methods: {
-    ...mapActions(['todo/callTask', 'todo/saveTask']),
-    ...mapGetters(['todo/getUser']),
-    ...mapGetters(['todo/getAllTask']),
-    addTask () {
-      let date = this.task.doneAt.split('/').join('-')
-      this.task.doneAt = moment(date, 'DD-MM-YYYY').toString()
-      const DATA = this.task
-      const URL = this.url
+    ...mapActions(['task/getAll', 'task/add', 'task/remove', 'task/move']),
+    callTasks () {
+      const URL = this.urlTask
       const ID = null
-      const ACTION = 'save'
-      this['todo/saveTask']({ DATA, URL, ID, ACTION })
+      const ACTION = 'get'
+      this['task/getAll']({ URL, ID, ACTION })
+        .then(() => console.log('pegou as tarefas'))
+        .catch(() => this.$q.notify({
+          message: 'Deu alguma outra pane'
+        }))
+    },
+    addTask () {
+      let date = this.newTask.doneAt.split('/').join('-')
+      this.newTask.doneAt = moment(date, 'DD-MM-YYYY').toString()
+      let DATA = this.newTask
+      let URL = this.urlTask
+      let ID = null
+      let ACTION = 'save'
+      this['task/add']({ DATA, URL, ID, ACTION })
         .then(() => {
-          this.task = {
+          this.newTask = {
             title: '',
             description: '',
             doneAt: '',
-            done: false
+            status: 'open'
           }
           this.$q.notify({
             message: 'Task saved'
@@ -134,28 +140,55 @@ export default {
         })
         .catch(() => console.log('save error'))
     },
-    moveTrash ({ reset }, index) {
-      this.tasks[index].done = false
-      this.$q.notify('Task Open')
-      this.$q.localStorage.set('tasks', this.tasks)
+    removeTask (id) {
+      let DATA = null
+      let URL = this.urlTask
+      let ID = id
+      let ACTION = 'delete'
+      console.log(ID)
+      this['task/remove']({ DATA, URL, ID, ACTION })
+        .then(() => {
+          this.$q.notify({
+            message: 'Task removed'
+          })
+        })
+        .catch((error) => console.log('error remove ', error))
+    },
+    moveFrom (id, from) {
+      let ACTION = 'save'
+      let ID = id
+      let URL = this.urlTask
+      let status = null
+      switch (from) {
+        case 'trash':
+          status = 'trash'
+          break
+        case 'open':
+          status = 'open'
+          break
+        case 'done':
+          status = 'done'
+          break
+      }
+      let DATA = { status: status }
+      this['task/move']({ DATA, URL, ID, ACTION })
+        .then(() => {
+          this.$q.notify('move to ' + status)
+        })
+        .catch(() => console.log('erro ao mover para o lixo'))
+    },
+    moveOpen ({ reset }, id) {
+      this.moveFrom(id, 'open')
       this.finalize(reset)
     },
-    moveDone ({ reset }, index) {
-      this.$q.notify('Task Done')
-      this.tasks[index].done = true
-      this.$q.localStorage.set('tasks', this.tasks)
+    moveDone ({ reset }, id) {
+      this.moveFrom(id, 'done')
       this.finalize(reset)
     },
     finalize (reset) {
       this.timer = setTimeout(() => {
         reset()
       }, 500)
-    },
-    loadTasks () {
-      if (!this.$q.localStorage.getItem('tasks')) {
-        return
-      }
-      this.tasks = this.$q.localStorage.getItem('tasks')
     },
     onCloseDialog () {
       this.task = {}

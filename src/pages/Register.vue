@@ -10,6 +10,7 @@
           <q-input
             label="Name"
             v-model="registerData.name"
+<<<<<<< HEAD
             outlined
             class="input"/>
           <q-input
@@ -17,18 +18,33 @@
             v-model="registerData.email"
             outlined
             class="input"/>
+=======
+            class="input"/>
+
+          <q-input
+            label="Email"
+            v-model="registerData.email"
+            class="input"/>
+
+>>>>>>> d8d45f1d550d25f7a7282560a98465f177d5d762
           <q-input
             label="Password"
             type="password"
             v-model="registerData.password"
+<<<<<<< HEAD
             outlined
+=======
+>>>>>>> d8d45f1d550d25f7a7282560a98465f177d5d762
             class="input"/>
 
           <q-input
             label="Repassword"
             type="password"
             v-model="registerData.repassword"
+<<<<<<< HEAD
             outlined
+=======
+>>>>>>> d8d45f1d550d25f7a7282560a98465f177d5d762
             class="input"/>
         </q-card-section>
 
@@ -72,11 +88,10 @@ export default {
   data () {
     return {
       registerData: {
-        username: '',
+        name: '',
         email: '',
         password: ''
       },
-      showPw: false,
       urlRegister: 'http://localhost:3000/user/register/'
     }
   },
