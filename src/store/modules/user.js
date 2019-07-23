@@ -24,7 +24,17 @@ const actions = {
         SessionStorage.set('token', response.token)
       }
     } catch (error) {
-      console.log('error ', error)
+      console.log(error)
+    }
+  },
+  async register ({ commit }, payload) {
+    try {
+      let response = await apiRequest(payload)
+      if (response) {
+        console.log(response)
+      }
+    } catch (error) {
+      console.log(error)
     }
   },
   logout ({ commit }) {

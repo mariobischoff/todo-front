@@ -7,24 +7,33 @@
       indicator-color="primary"
       align="justify"
     >
-      <q-tab name="allTask" icon="list" label="Open" />
+      <q-tab name="open" icon="list" label="Open" />
       <q-tab name="done" icon="done" label="Done" />
       <q-tab name="trash" icon="delete" label="Trash" />
     </q-tabs>
 
     <q-separator color="primary"/>
 
-    <q-tab-panels v-model="tab" animated>
-      <q-tab-panel name="allTask">
-        <TodoList :tasks="taskOpen"/>
-      </q-tab-panel>
+    <div class="text-center">
+    <q-spinner
+      color="primary"
+      size="5em"
+      v-if="loading"/>
+    </div>
 
+    <q-tab-panels
+      v-if="!loading"
+      v-model="tab"
+      animated
+    >
+      <q-tab-panel name="open">
+        <TodoList :tasks="getTask(tab)"/>
+      </q-tab-panel>
       <q-tab-panel name="done">
-        <TodoList :tasks="taskDone"/>
+        <TodoList :tasks="getTask(tab)"/>
       </q-tab-panel>
-
       <q-tab-panel name="trash">
-        <TodoList :tasks="taskTrash"/>
+        <TodoList :tasks="getTask(tab)"/>
       </q-tab-panel>
     </q-tab-panels>
 
@@ -74,7 +83,8 @@
 </template>
 
 <script>
-import { mapActions, mapState, mapGetters } from 'vuex'
+import { mapActions, mapState } from 'vuex'
+import _ from 'lodash'
 import moment from 'moment'
 import TodoList from './../components/TodoList'
 
@@ -91,7 +101,8 @@ export default {
         doneAt: '',
         status: 'open'
       },
-      tab: 'allTask',
+      loading: false,
+      tab: 'open',
       dialogTask: false,
       urlTask: '/task'
     }
@@ -100,12 +111,7 @@ export default {
     this.callTasks()
   },
   computed: {
-    ...mapState('task', ['tasks']),
-    ...mapGetters({
-      taskOpen: 'task/taskOpen',
-      taskDone: 'task/taskDone',
-      taskTrash: 'task/taskTrash'
-    })
+    ...mapState('task', ['tasks'])
   },
   methods: {
     ...mapActions(['task/getAll', 'task/add']),
@@ -113,11 +119,21 @@ export default {
       const URL = this.urlTask
       const ID = null
       const ACTION = 'get'
+      this.loading = true
+      let vm = this
       this['task/getAll']({ URL, ID, ACTION })
-        .then(() => console.log('pegou as tarefas'))
-        .catch(() => this.$q.notify({
-          message: 'Deu alguma outra pane'
-        }))
+        .then(() => {
+          vm.loading = false
+        })
+        .catch(() => {
+          vm.loading = false
+          this.$q.notify({
+            message: 'Deu alguma outra pane'
+          })
+        })
+    },
+    getTask (filter) {
+      return _.filter(this.tasks, { 'status': filter })
     },
     addTask () {
       let date = this.newTask.doneAt.split('/').join('-')

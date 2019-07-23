@@ -72,20 +72,21 @@ export default {
       registerData: {
         name: '',
         email: '',
-        password: ''
+        password: '',
+        repassword: ''
       },
-      urlRegister: 'http://localhost:3000/user/register/'
+      urlRegister: '/user/register'
     }
   },
   methods: {
-    ...mapActions(['todo/doRegister']),
+    ...mapActions(['user/register']),
     doRegister () {
       const DATA = this.registerData
       const URL = this.urlRegister
       const ID = null
       const ACTION = 'save'
-      this['todo/doRegister']({ DATA, URL, ID, ACTION })
-        .then((response) => {
+      this['user/register']({ DATA, URL, ID, ACTION })
+        .then(() => {
           this.$router.push('/auth/login')
         })
         .catch((err) => {

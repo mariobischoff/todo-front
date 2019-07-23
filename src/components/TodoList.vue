@@ -8,7 +8,7 @@
         <template v-slot:right>
           <q-icon name="close" />
         </template>
-        <q-item clickable v-ripple :class="{ done: task.status == 'done', notDone: task.status == 'open' }">
+        <q-item clickable v-ripple>
           <q-item-section>
             <q-item-label>{{ task.title }}</q-item-label>
             <q-item-label caption lines="2">{{ task.description }}</q-item-label>
@@ -30,13 +30,6 @@
     </div>
   </q-list>
 </template>
-
-<style lang="stylus" scoped>
-  .done
-    background $green-1
-  .notDone
-    background $red-1
-</style>
 
 <script>
 import { mapActions } from 'vuex'
