@@ -86,11 +86,9 @@ export default {
       const ID = null
       const ACTION = 'save'
       this['user/login']({ DATA, URL, ID, ACTION })
-        .then(() => { this.$router.push('/') })
-        .catch((err) => {
-          this.$q.notify({
-            message: 'Deu alguma pane ' + err
-          })
+        .then((result) => {
+          console.log(result)
+          this.$router.push('/')
         })
     }
   }

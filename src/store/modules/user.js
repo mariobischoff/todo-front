@@ -17,15 +17,27 @@ const mutations = {
 
 const actions = {
   async login ({ commit }, payload) {
-    try {
-      let response = await apiRequest(payload)
-      if (response.token) {
-        commit('setToken', response.token)
-        SessionStorage.set('token', response.token)
-      }
-    } catch (error) {
-      console.log(error)
-    }
+    return apiRequest(payload)
+      .then((response) => {
+        if (response.token) {
+          commit('setToken', response.token)
+          commit('setUser', response.user)
+          SessionStorage.set('token', response.token)
+        }
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+    // try {
+    //   let response = await apiRequest(payload)
+    //   if (response.token) {
+    //     commit('setToken', response.token)
+    //     commit('setUser', response.user)
+    //     SessionStorage.set('token', response.token)
+    //   }
+    // } catch (error) {
+    //   console.log(error)
+    // }
   },
   async register ({ commit }, payload) {
     try {

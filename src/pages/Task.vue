@@ -27,13 +27,13 @@
       animated
     >
       <q-tab-panel name="open">
-        <TodoList :tasks="getTask(tab)"/>
+        <TodoList :tasks="getTask(tab)" @clickTask="clickTask"/>
       </q-tab-panel>
       <q-tab-panel name="done">
-        <TodoList :tasks="getTask(tab)"/>
+        <TodoList :tasks="getTask(tab)" @clickTask="clickTask"/>
       </q-tab-panel>
       <q-tab-panel name="trash">
-        <TodoList :tasks="getTask(tab)"/>
+        <TodoList :tasks="getTask(tab)" :showTrash="false" @clickTask="clickTask"/>
       </q-tab-panel>
     </q-tab-panels>
 
@@ -72,7 +72,7 @@
 
         <q-card-actions align="right" class="text-primary">
           <q-btn flat label="Cancel" @click="onCloseDialog" v-close-popup />
-          <q-btn flat label="Commit" @click="addTask" v-close-popup />
+          <q-btn flat label="Commit" @click="addOrEdit(idTask)" v-close-popup />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -101,6 +101,7 @@ export default {
         doneAt: '',
         status: 'open'
       },
+      idTask: null,
       loading: false,
       tab: 'open',
       dialogTask: false,
@@ -114,7 +115,15 @@ export default {
     ...mapState('task', ['tasks'])
   },
   methods: {
-    ...mapActions(['task/getAll', 'task/add']),
+    ...mapActions(['task/getAll', 'task/add', 'task/edit']),
+    _clearForm () {
+      this.newTask = {
+        title: '',
+        description: '',
+        doneAt: '',
+        status: 'open'
+      }
+    },
     callTasks () {
       const URL = this.urlTask
       const ID = null
@@ -127,34 +136,46 @@ export default {
         })
         .catch(() => {
           vm.loading = false
-          this.$q.notify({
-            message: 'Deu alguma outra pane'
-          })
         })
     },
     getTask (filter) {
       return _.filter(this.tasks, { 'status': filter })
     },
-    addTask () {
+    clickTask (id) {
+      this.idTask = id
+      let taskToEdit = JSON.parse(JSON.stringify(_.find(this.tasks, { '_id': id })))
+      this.newTask.title = taskToEdit.title
+      this.newTask.description = taskToEdit.description
+      this.newTask.doneAt = taskToEdit.doneAt
+      this.dialogTask = true
+    },
+    addOrEdit (id = null) {
+      let URL = this.urlTask
+      let ACTION = 'save'
+      let ID = id
+      let DATA = this.newTask
       let date = this.newTask.doneAt.split('/').join('-')
       this.newTask.doneAt = moment(date, 'DD-MM-YYYY').toString()
-      let DATA = this.newTask
-      let URL = this.urlTask
-      let ID = null
-      let ACTION = 'save'
-      this['task/add']({ DATA, URL, ID, ACTION })
-        .then(() => {
-          this.newTask = {
-            title: '',
-            description: '',
-            doneAt: '',
-            status: 'open'
-          }
-          this.$q.notify({
-            message: 'Task saved'
+      if (id) {
+        this['task/edit']({ DATA, URL, ID, ACTION })
+          .then(() => {
+            console.log('editou')
+            this.idTask = null
+            this._clearForm()
           })
-        })
-        .catch(() => console.log('save error'))
+          .catch((error) => {
+            console.log(error)
+          })
+      } else {
+        this['task/add']({ DATA, URL, ID, ACTION })
+          .then(() => {
+            this._clearForm()
+            console.log('adicionou')
+          })
+          .catch((error) => {
+            console.log(error)
+          })
+      }
     },
     removeTask (id) {
       let DATA = null
@@ -171,8 +192,8 @@ export default {
         .catch((error) => console.log('error remove ', error))
     },
     onCloseDialog () {
-      this.task = {}
-      this.taskID = null
+      this._clearForm()
+      this.idTask = null
     }
   }
 }

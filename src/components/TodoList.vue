@@ -8,13 +8,13 @@
         <template v-slot:right>
           <q-icon name="close" />
         </template>
-        <q-item clickable v-ripple>
+        <q-item clickable v-ripple @click="clickTask(task._id)">
           <q-item-section>
             <q-item-label>{{ task.title }}</q-item-label>
             <q-item-label caption lines="2">{{ task.description }}</q-item-label>
           </q-item-section>
 
-          <q-item-section side>
+          <q-item-section v-if="showTrash" side>
             <div class="row">
               <div class="col-auto q-mr-sm">
                 <q-icon name="delete" size="25px" color="red" @click="moveFrom(task._id, 'trash')"/>
@@ -37,6 +37,10 @@ export default {
   props: {
     tasks: {
       type: Array
+    },
+    showTrash: {
+      type: Boolean,
+      default: true
     }
   },
   data () {
@@ -46,6 +50,9 @@ export default {
   },
   methods: {
     ...mapActions(['task/remove', 'task/move']),
+    clickTask (id) {
+      this.$emit('clickTask', id)
+    },
     moveFrom (id, from) {
       let ACTION = 'save'
       let ID = id

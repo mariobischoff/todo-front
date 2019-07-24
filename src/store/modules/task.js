@@ -50,7 +50,7 @@ const actions = {
       console.log(error)
     }
   },
-  async move ({ commit, state }, payload) {
+  async edit ({ commit, state }, payload) {
     try {
       let task = await apiRequest(payload)
       if (task) {

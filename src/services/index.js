@@ -36,4 +36,5 @@ const doRequest = (payload) => {
 export const apiRequest = (payload) => {
   return axiosInstance(doRequest(payload))
     .then(response => response.data)
+    .catch(error => error)
 }
