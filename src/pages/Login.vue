@@ -86,9 +86,11 @@ export default {
       const ID = null
       const ACTION = 'save'
       this['user/login']({ DATA, URL, ID, ACTION })
-        .then((result) => {
-          console.log(result)
+        .then(() => {
           this.$router.push('/')
+        })
+        .catch((error) => {
+          console.log(error)
         })
     }
   }

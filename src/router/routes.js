@@ -1,5 +1,3 @@
-import { SessionStorage } from 'quasar'
-
 const routes = [
   {
     path: '/auth',
@@ -11,17 +9,13 @@ const routes = [
   },
   {
     path: '/',
+    meta: {
+      requiredAuth: true
+    },
     component: () => import('layouts/Layout.vue'),
     children: [
       { path: '', component: () => import('pages/Task.vue') }
-    ],
-    beforeEnter: (to, from, next) => {
-      if (SessionStorage.getItem('token')) {
-        next()
-        return
-      }
-      next('/auth/login')
-    }
+    ]
   }
 ]
 

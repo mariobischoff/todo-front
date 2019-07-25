@@ -2,62 +2,20 @@
   <q-layout view="lHh Lpr lFf">
     <q-header elevated>
       <q-toolbar>
+        <q-toolbar-title class="text-center">
+          Todo
+        </q-toolbar-title>
         <q-btn
           flat
           dense
           round
-          @click="leftDrawerOpen = !leftDrawerOpen"
+          @click="logout"
           aria-label="Menu"
         >
-          <q-icon name="menu" />
+          <q-icon name="exit_to_app" />
         </q-btn>
-
-        <q-toolbar-title>
-          Todo
-        </q-toolbar-title>
       </q-toolbar>
     </q-header>
-
-    <q-drawer
-      v-model="leftDrawerOpen"
-      bordered
-      content-class="bg-grey-2"
-    >
-    <div class="header">
-      <q-avatar size="80px">
-        <img src="https://forum.edencraft.com.br/download/file.php?avatar=6926_1514724632.jpg" />
-      </q-avatar>
-      <h1>{{ user.name }}</h1>
-      <p>{{ user.email }}</p>
-    </div>
-      <q-list>
-        <q-item clickable to="/" exact>
-          <q-item-section avatar>
-            <q-icon name="list" />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>Tasks</q-item-label>
-          </q-item-section>
-        </q-item>
-        <q-item clickable to="/checked" exact>
-          <q-item-section avatar>
-            <q-icon name="done" />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>Done</q-item-label>
-          </q-item-section>
-        </q-item>
-        <q-item clickable to="/trash" exact>
-          <q-item-section avatar>
-            <q-icon name="delete" />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>Trash</q-item-label>
-          </q-item-section>
-        </q-item>
-      </q-list>
-    </q-drawer>
-
     <q-page-container>
       <router-view />
     </q-page-container>
@@ -65,17 +23,29 @@
 </template>
 
 <script>
+import { mapActions, mapMutations } from 'vuex'
 export default {
   name: 'MyLayout',
   data () {
     return {
-      leftDrawerOpen: this.$q.platform.is.desktop,
       user: {
         name: 'Mario',
         email: 'mariobischoff@gmail.com'
       }
     }
+  },
+  methods: {
+    ...mapActions(['user/logout']),
+    ...mapMutations(['task/setTasks']),
+    logout () {
+      this['user/logout']()
+        .then(() => {
+          this['task/setTasks']('')
+          this.$router.push('/auth/login')
+        })
+    }
   }
+
 }
 </script>
 
