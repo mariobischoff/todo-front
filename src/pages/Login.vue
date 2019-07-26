@@ -65,15 +65,14 @@
 
 <script>
 import { mapActions } from 'vuex'
-// import { SessionStorage } from 'quasar'
 
 export default {
   data () {
     return {
       urlLogin: '/user/login',
       dataLogin: {
-        email: 'alves1234@gmail.com',
-        password: '1234'
+        email: '',
+        password: ''
       },
       showPw: false
     }

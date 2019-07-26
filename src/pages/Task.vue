@@ -59,7 +59,12 @@
             label="description"
           />
 
-          <q-input filled v-model="newTask.doneAt" label="date of your task">
+          <q-input
+            filled
+            v-model="newTask.doneAt"
+            label="date of your task"
+            @focus="() => $refs.qDateProxy.show()"
+            @click="() => $refs.qDateProxy.show()">
             <template v-slot:append>
               <q-icon name="event" class="cursor-pointer">
                 <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
@@ -146,7 +151,7 @@ export default {
       let taskToEdit = JSON.parse(JSON.stringify(_.find(this.tasks, { '_id': id })))
       this.newTask.title = taskToEdit.title
       this.newTask.description = taskToEdit.description
-      this.newTask.doneAt = taskToEdit.doneAt
+      this.newTask.doneAt = moment(taskToEdit.doneAt).format('DD/MM/YYYY')
       this.dialogTask = true
     },
     addOrEdit (id = null) {

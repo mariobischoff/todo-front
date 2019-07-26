@@ -17,7 +17,7 @@
           <q-item-section v-if="showTrash" side>
             <div class="row">
               <div class="col-auto q-mr-sm">
-                <q-icon name="delete" size="25px" color="red" @click="moveFrom(task._id, 'trash')"/>
+                <q-icon name="delete" size="25px" color="red" @click.stop="moveFrom(task._id, 'trash')"/>
               </div>
               <div class="col self-center">
                 <q-item-label caption>{{ task.date }}</q-item-label>
@@ -49,7 +49,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['task/remove', 'task/move']),
+    ...mapActions(['task/remove', 'task/edit']),
     clickTask (id) {
       this.$emit('clickTask', id)
     },
@@ -70,7 +70,7 @@ export default {
           break
       }
       let DATA = { status: status }
-      this['task/move']({ DATA, URL, ID, ACTION })
+      this['task/edit']({ DATA, URL, ID, ACTION })
         .then(() => {
           this.$q.notify('move to ' + status)
         })
